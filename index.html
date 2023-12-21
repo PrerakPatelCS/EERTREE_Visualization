@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EERTREE Drawer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1 style="text-align: center">EERTREE Drawer</h1>
+    <div class="container">
+        <textarea id="textInput" name="textInput" rows="6" maxlength="300" placeholder="Continue to type and watch the EERTREE build as you go... (300 Character Limit)"></textarea>
+    </div>
+
+    <div class="container">
+        <input type="range" min="100" max="2000" value="1000" class="slider" id="speedSlider" step="100">
+    </div>
+
+    <div class="container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script type="text/javascript" src="InputStream.js"></script>
+    <script type="text/javascript" src="InputHandler.js"></script>
+</body>
+</html>
