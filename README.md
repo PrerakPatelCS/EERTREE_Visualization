@@ -199,7 +199,150 @@ How does the EERTREE communicate with the queue?
     the pause, resume, change index will be called by the input handler
 
 
+## EERTREE
+
+Want to have insert and delete functions for our EERTREE
+
+About EERTREE
+
+GOing to be going over the paper on EERTREE from 2015 
+Data Structure for palindrome-related algorithmic problems.
+Search, counting, factorization, RNA studies, affix trees and affix arrays.
+
+This is a tree good for preprocessing but we are using it in an online fashion
+where we will be inserting and deleting as we go
+
+Number of nodes in the directed graph equals the number of distinct palindromes
+inside the string.
+
+For n = string size and k = number of distinct characters
+The algorithm needs O(n log(k)) time and O(n) space
+For a random string, the expected space is O(sqrt(nk))
+
+The Motive of the EERTREE is to find distinct subpalindromes
+subpalindromes = a substring of string S that is a palindrome
+it has center (l + r) / 2 and radius ((r - l + 1) / 2)
+which means the length = (r - l + 1)
+The raius is important because that is half the string so you can think
+of a palindrome as xAx where x is a string and A is the center
+
+Basic version supports one operation add(c) which adds c to the processed string
+from the right and updates the DS. Returns the number of new palindromes that 
+are in the string.
+
+
+
+Lemma 2.1
+
+S is a string and c is a character. Sc contains at most one palindrome 
+which is not a substring of S. This new palindrome is the longest suffix-palindrome 
+of Sc.
+
+To get the number of distinct subpalindromes of S, just return the maximum
+number of a node in eertree.
+
+add(c) returns 0 or 1
+
+each node stores the length of its palindrome.
+
+Initialization:
+
+2 special nodes are added
+    empty string - length 0 number 0
+    imaginary string - length -1 and number -1
+
+Edges:
+
+if c is a character, v and cvc are two nodes, then an edge labeled by c goes from v to cvc
+v ->(c) cvc
+edge labeled by c goes from the node 0 to the node labeled by cc if it exists.
+This is why we need two initial nodes.
+
+Each node stores edges in a dictionary, <Character, destintation Node>
+this effectively labels the edge
+
+This is similar to a trie
+
+Suffix link is unlabeled and connects u to v if v is the longest proper 
+suffix-palindrome of u
+
+
+Facts:
+
+    - A node of positive length in an eertree has exactly one incoming edge.
+    - EERTREE of a string S of length n take O(n) space.
+    takes at most n + 2 nodes, at most n edges, and at most n + 2 suffix links
+    - For a string S of length n eertree(S) can be built online in O(nlog(k)) time    
+
+Properties
+
+Nodes and edges of an eertree form two weakly connected components
+the tree of odd nodes rooted at -1 and the tree of even nodes rooted at 0
+
+The tree of even nodes is a trie of right halves of even length palindromes.
+
+Nodes and inverted suffix links of an eertree form a tree with a loop at its
+root -1
+
+The edges of an eertree constitute no cycles, odd nodes are unreachable from even ones
+and vice versa. Each even/odd node can be reached by a unique path from 0/-1
+
+The suffix link decreases the length of a node, except for node -1. So the only cycle of 
+suffix links is the loop at -1. Each node has a unique suffix link and is connected
+by a suffix path to the node -1. So it is a tree with a loop at the root.
+
+Expected size of eertree is usually much smaller than n, usually O(sqrt(nk))
+Whereas Tries can have n^2 size if built from the set of all suffixes of a length n string.
+
+
+Implementing Add:
+
+Need to keep an instance of a max suffix node of S
+We want the max Suffix since the suffix is at the end so this also means
+this is the last node in the tree but also now we can traverse the suffixes
+so this is like the root of the suffix tree now we go through links up the tree
+
+Traverse the suffix palindromes of S in order of decreasing length
+For each palindrome we read its length k and compare S[s.length() - k - 1]
+against the new character c until they are equal or if we get to the -1 node
+
+That is how we get the maximum suffix-palindrome Q of Sc
+
+Then we check if Q has an outgoing edge labeled by c
+If it is then we create a new node P which is the palindrome cQc
+we add 2 to the Q.len, if Q = -1 the imaginary node
+then P suffix link is -1 otherwise continue traversing suffix palindromes 
+of S starting with suffix link of Q
+
+Now we have a new max Suffix 
+
+Put the max suffixes into the stack and update the parent
+
+
+Implementing Delete:
+
+Put nodes into a stack so we can delete them with pop()
+We also need to update the parent of that node, each child has one parent
+so we need to store that in the Node
+
+
+
+# Visualization
 
 
 
 
+
+
+# Citation Check this out!!
+
+Mikhail Rubinchik, Arseny M. Shur,
+EERTREE: An efficient data structure for processing palindromes in strings,
+European Journal of Combinatorics,
+Volume 68,
+2018,
+Pages 249-265,
+ISSN 0195-6698,
+https://doi.org/10.1016/j.ejc.2017.07.021.
+(https://www.sciencedirect.com/science/article/pii/S0195669817301294)
+Abstract: We propose a new linear-size data structure which provides a fast access to all palindromic substrings of a string or a set of strings. This structure inherits some ideas from the construction of both the suffix trie and suffix tree. Using this structure, we present simple and efficient solutions for a number of problems involving palindromes.
