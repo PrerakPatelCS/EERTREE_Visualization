@@ -15,12 +15,13 @@ class Visualize {
             edges: edges
         };
         this.options = {
+            nodes:{
+                color: {
+                    
+                },
+            },
             layout:{
-                randomSeed: 42,
-                hierarchical: {
-                    sortMethod: 'directed', // Sort nodes by connections
-                    parentCentralization: true, // Centralize parent nodes
-                }
+                hierarchical: true
             },
         };
 
@@ -32,6 +33,7 @@ class Visualize {
         return {
             id: node.id,
             label: node.length < 1 ? node.length.toString() : node.palindrome,
+            level: node.level
         };
     }
 

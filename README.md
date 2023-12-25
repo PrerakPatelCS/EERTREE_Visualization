@@ -412,6 +412,15 @@ Library Vis.js
     
     Use levels for the hierarchy so everything is nice and neat
 
+    How to highlight the nodes we visit?
+        We can have a highlight function
+        Only highlight the node
+        How long do we highlight a node
+        interval time the same as the inputStream interval
+        or interval / n n = total number of nodes
+        I think interval time is best
+        so add will take in an interval as well.
+
 
 
 

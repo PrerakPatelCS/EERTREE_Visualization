@@ -1,11 +1,11 @@
 class Node {
-    constructor(len, suffix, id) {
+    constructor(len, suffix, id, level) {
         this.edges = new Map(); // edges <Character, Node>
         this.link = suffix; // Suffix link points to another node
         this.length = len; // Length of the palindrome represented by this node
         this.palindrome = "";
-        this.parent = null;
         this.id = id;
+        this.level = level;
     }
 }
 
@@ -13,36 +13,12 @@ class Eertree {
     constructor() {
         this.count = 0;
         this.nodes = []; // Stack of nodes for deletion only holds nodes of T not the imaginary or empty nodes
-        this.imaginary = new Node(-1, null, this.count++); // also called odd length root node
-        this.empty = new Node(0, this.imaginary, this.count++); // also called even length root node
+        this.imaginary = new Node(-1, null, this.count++, 1); // also called odd length root node
+        this.empty = new Node(0, this.imaginary, this.count++, 2); // also called even length root node
         this.maxSuffixOfT = this.empty; // this is the current node we are on also the maximum Suffix of tree T
         this.s = ""; // String processed by the Eertree
         this.nodes.push(this.maxSuffixOfT);
-        this.visual = new Visualize(this.imaginary, this.empty);
-        
-    }
-
-
-    /**
-     * Traverse the suffix palindromes of T in the order of decreasing length
-     * Keep traversing until we get to imaginary node or until T[len - k] = a
-     * @param {Node} startNode 
-     * @param {Character} a
-     * @returns {Node} u
-     */
-    getMaxSuffixPalindrome(startNode, a){
-        let u = startNode;
-        let n = this.s.length;
-        //console.log(u.edges, u.link, u.length);
-        let k = u.length;
-        while(u !== this.imaginary && this.s[n - k - 1] !== a){
-            if(u === u.link){
-                throw new Error('Infinite Loop');
-            }
-            u = u.link;
-            k = u.length;
-        }
-        return u;
+        this.visual = new Visualize(this.imaginary, this.empty);        
     }
 
 
@@ -54,8 +30,30 @@ class Eertree {
      * @param {Character} c 
      * @returns int 1 if it created a new node an 0 otherwise
      */
-    add(c){
-        let Q = this.getMaxSuffixPalindrome(this.maxSuffixOfT, c);
+    add(c, interval){
+        /**
+         * Traverse the suffix palindromes of T in the order of decreasing length
+         * Keep traversing until we get to imaginary node or until T[len - k] = a
+         * @param {Node} startNode 
+         * @param {Character} a
+         * @returns {Node} u
+         */
+        const getMaxSuffixPalindrome = (startNode, a) =>{
+            let u = startNode;
+            let n = this.s.length;
+            let k = u.length;
+            while(u !== this.imaginary && this.s[n - k - 1] !== a){
+                if(u === u.link){
+                    throw new Error('Infinite Loop');
+                }
+                u = u.link;
+                k = u.length;
+            }
+            return u;
+        };
+
+
+        let Q = getMaxSuffixPalindrome(this.maxSuffixOfT, c);
         let createNewNode = !(Q.edges.has(c));
         
         if(createNewNode){
@@ -65,6 +63,7 @@ class Eertree {
             if(P.length === 1){
                 P.link = this.empty;
                 P.palindrome = c;
+                P.level = this.empty.level + 1;
             }
             else{
                 /**
@@ -72,16 +71,21 @@ class Eertree {
                  * Continue traversing suffix palindromes of T starting with the suffix
                  * we found earlier 's link
                  */
-                P.link = this.getMaxSuffixPalindrome(Q.link, c).edges.get(c);
+                P.link = getMaxSuffixPalindrome(Q.link, c).edges.get(c);
                 P.palindrome = c + Q.palindrome + c;
+                P.level = Q.level + 1;
             }
             P.id = this.count++;
             this.nodes.push(P);
             P.parent = Q;
             Q.edges.set(c, P);
+            
             this.visual.addNode(P);
             this.visual.addEdge(Q, P, c);
             this.visual.addLink(P, P.link);
+        }
+        else{
+            this.nodes.push(null);
         }
         this.maxSuffixOfT = Q.edges.get(c);
         this.s += c;
@@ -98,11 +102,18 @@ class Eertree {
      */
     delete(){
         let delNode = this.nodes.pop();
-        this.maxSuffixOfT = this.nodes.at(-1);
-        this.s = this.s.substring(0, this.s.length - 1);
-        let c = delNode.palindrome[0];
-        delNode.parent.edges.delete(c);
-        this.visual.delNode(delNode);
+        if(delNode !== null){
+            this.s = this.s.substring(0, this.s.length - 1);
+            let c = delNode.palindrome[0];
+            delNode.parent.edges.delete(c);
+            this.visual.delNode(delNode);
+        }
+        for(let i = this.nodes.length - 1; i > 0; i--){
+            if(this.nodes[i] !== null){
+                this.maxSuffixOfT = this.nodes[i];
+                break;
+            }
+        }
     }
 }
 
