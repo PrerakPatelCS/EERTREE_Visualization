@@ -329,7 +329,88 @@ so we need to store that in the Node
 
 # Visualization
 
+We want to visualize thise EERTREE in the canvas
+When we add a new node we add that node into the canvas
+    - Show the steps and nodes we visit in the getMaxSuffixPalindrome method
+    Highlight those
+    - Make the edges have labeled lines with arrows from the parent to the child ->
+    solid line, labeled by the character
+    - The suffix links will be parent to child also -> and will be dashed line
 
+How to do this?
+
+Represent the nodes
+    - Make ovals that hold the palindrome string inside it
+
+Represent the edges
+    - Need to coordinates of the parent and child so we can make the line
+    - Consider having each node hold the coordinates or have each node hold an
+    object that has the coordinates
+
+Represent the Suffix links
+    - Dashed Line goes upwards
+
+Represent the self loop for the imaginary node
+    - Special only this node will have a self edge
+
+If the canvas becomes too cluttered?
+    - consider lowering the character limit from 300 to 100? 10?
+    - Maybe have users scroll around
+    - resize the nodes to fit in the canvas
+
+
+Methods in the Visualize class will take 
+    - either the node itself or just some parameters
+    - Just some parameters can make some data more encapsulated
+    - Sending the node itself can make it easier on the client and makes the abstraction
+    better
+
+Problems
+
+    Canvas interface is really annoying, cannot resize it and keep the nodes
+    this makes redrawing the tree after each node prefered but we are not doing that
+    because then we cannot show the steps in the process
+
+    We can lower the character limit but my testcase
+    WASITACARORACATISAW
+    is already too big so this is a big problem
+
+    Canvas will not cut it looking into libraries
+
+Library Vis.js
+
+    looks like what I need, the network visualization is perfect
+
+    Network Class
+    Parameters
+
+    Container
+        The HTML element where the network visualization will be displayed
+    Data(DataSets)
+        Contains the actual information about nodes and edges, this is how we add or remove nodes and edges
+    Options
+        Define properties and configurations for the network likw color, edge style and physics, etc.
+    
+    optional inputs
+    Manipulation -> Enables user iteraction for adding, deleting, or editing nodes and edges in the visualization.
+    Physics -> Defines how nodes interact with each other based on physics
+    Events -> event handling
+    Groups -> Categorize groups of nodes and edges for custom styling or behavior
+
+    Only optional one that we may use is the groups
+    We want to put the 2 different kinds of edges into groups
+
+
+    Data
+        Make Data Sets
+        Datasets for Nodes and edges
+        Nodes need an id
+        optional label, group, title, etc.
+
+        Edges need from NodeId to NodeId
+        optional id, label, arrows, color
+    
+    Use levels for the hierarchy so everything is nice and neat
 
 
 

@@ -1,21 +1,25 @@
 class Node {
-    constructor(len, suffix) {
+    constructor(len, suffix, id) {
         this.edges = new Map(); // edges <Character, Node>
         this.link = suffix; // Suffix link points to another node
         this.length = len; // Length of the palindrome represented by this node
         this.palindrome = "";
         this.parent = null;
+        this.id = id;
     }
 }
 
 class Eertree {
     constructor() {
+        this.count = 0;
         this.nodes = []; // Stack of nodes for deletion only holds nodes of T not the imaginary or empty nodes
-        this.imaginary = new Node(-1, null); // also called odd length root node
-        this.empty = new Node(0, this.imaginary); // also called even length root node
+        this.imaginary = new Node(-1, null, this.count++); // also called odd length root node
+        this.empty = new Node(0, this.imaginary, this.count++); // also called even length root node
         this.maxSuffixOfT = this.empty; // this is the current node we are on also the maximum Suffix of tree T
         this.s = ""; // String processed by the Eertree
         this.nodes.push(this.maxSuffixOfT);
+        this.visual = new Visualize(this.imaginary, this.empty);
+        
     }
 
 
@@ -41,7 +45,7 @@ class Eertree {
         return u;
     }
 
-    
+
     /**
      * Add will only add at most 1 node to the tree. 
      * We get the max suffix palindrome with the same character before it
@@ -71,14 +75,17 @@ class Eertree {
                 P.link = this.getMaxSuffixPalindrome(Q.link, c).edges.get(c);
                 P.palindrome = c + Q.palindrome + c;
             }
-            
+            P.id = this.count++;
             this.nodes.push(P);
             P.parent = Q;
             Q.edges.set(c, P);
+            this.visual.addNode(P);
+            this.visual.addEdge(Q, P, c);
+            this.visual.addLink(P, P.link);
         }
         this.maxSuffixOfT = Q.edges.get(c);
         this.s += c;
-
+        
         return createNewNode === true ? 1 : 0;
     }
 
@@ -95,5 +102,19 @@ class Eertree {
         this.s = this.s.substring(0, this.s.length - 1);
         let c = delNode.palindrome[0];
         delNode.parent.edges.delete(c);
+        this.visual.delNode(delNode);
     }
 }
+
+let eertree = new Eertree();
+const insertToy = (c) =>{
+    eertree.add(c);
+    console.log("Inserted " + c);
+    console.log(eertree.nodes);
+};
+
+const deleteToy = (c) =>{
+    eertree.delete();
+    console.log("Deleted " + c);
+    console.log(eertree.nodes);
+};

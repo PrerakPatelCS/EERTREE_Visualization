@@ -61,16 +61,4 @@ function createDataStream(array, insertChar, deleteChar, interval){
     };
 }
 
-let eertree = new Eertree();
-const insertToy = (c) =>{
-    eertree.add(c);
-    console.log("Inserted " + c);
-    console.log(eertree.nodes);
-};
-
-const deleteToy = (c) =>{
-    eertree.delete();
-    console.log("Deleted " + c);
-    console.log(eertree.nodes);
-};
 
