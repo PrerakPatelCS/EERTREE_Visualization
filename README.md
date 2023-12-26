@@ -1,270 +1,45 @@
 # EERTREE_Visualization
 A Visualization for an EERTREE Data Structure also known as a Palindromic Tree
-
-## Design 
-
-Features to consider
-
-- Support changing Algorithms at runtime
-    This would be using the Strategy pattern, Would need the Strategy interface to
-    support all of the operations, Insert, delete, Draw, ...
-    Could do a couple algorithms like Manacher's
-    However Manacher's and such algorithms are meant for finding the longest palindrome
-    The EERTREE is meant to find all palindromes in a string, also it is a Data structure not 
-    an algorithm.
-    I think we should not support this however if in the future we want to map out the specific problem "find longest palindromic substring" then we can do that
-
-- Want to draw the Tree
-    EERTREE
-    Default tree has nodes in it, want to represent the
-    Node (Circle and has the palindrome inside it)
-    Next Edge (Edge connecting palindromes)
-    Suffix Edge (Edge connecting the node to the suffix)
-
-    Actually drawing the tree can be difficult need to get the coordinates for each node,
-    Unlike a BST we can have a different amount of elements at each level
-    and can add more to each level at any time.
-
-    Want could make it easier is if we made each level a row, so adding a node would
-    shift over the other nodes in the row
-    All edges would need to be redrawn, We could make the lines be drawn based on the 
-    possitions of the nodes
-    
-- Want real time updates
-    The only input should be from the text box, no submit button none of that
-    everytime a new character is added we insert that character into the tree
-    If we add from the end it should be O(log(26)) for the alphabet
-    Middle or begining we would need to redo the rest of the tree from that spot to the end
-    Adding the end is most likely and most popular
-
-    Add to end is an insert, want to show where the insert algorithm is at, so highlight the 
-    nodes it visits.
-
-    For Remove, because we have to rebuild the tree after an insert in the middle we can just remove everything rather than showing it,
-
-    we can show the sudo code and highlight which are we are on as well.
-
-    The animations will take time so we can set a pause time for each action, could be changed by the user. I also would like to keep all user input limited so this will be 
-    as simple as possible for the user
-
-    Each time a user types it will have an action on the tree
-
-    How to deal with inputs from user, we can make it much easier to handle if we make 
-    a queue of the inputs so we have a steady stream of commands. 
-    If user types normally we should be getting a ton of character inserts, we can use the 
-    queue to go through each and go through the whole diagram.
-    
-    What to do if the user deletes?
-    Once user 
-        From the end?
-            delete the node, don't bother with a visual 
-            delete from the end of the queue, consider using a deque
-
-        From the middle or begining?
-            delete all nodes that come after it and then rebuild everything
-            Clear the queue, add everything that comes after into the queue
-
-            What if they are deleting more than once and from different spots?
-                Deleting one character is probably rare, they are probably going through 
-                editing it so we can give a pause time, 5 seconds of no deleting
-
-    
-    What to do if the user inserts?
-        From the end?
-            Just insert, best case and most common case
-            Add the character into the queue
-            
-        From the middle or begining?
-            Worst case, Delete all nodes after and insert from there
-            Clear the queue, potentially go on pause for inserting, 
-            add all characters after back into the queue
-
-
-- We will effectively have 3 systems
-    1. The queue that handles inputs from the user
-    2. The EERTREE data structure 
-    3. The representation of the EERTREE data structure
-
-    Ideally we do not want these 3 to be tightly coupled
-    The queue can be decoupled easily 
-
-    Can we Decouple the DS and the representation?
-
-    Decoupled
-        Can draw the EERTREE easily by traversing the tree from the root
-        Everytime we change the tree, add or delete, we have to redraw the whole tree
-        For the insert function, cannot show the the steps it takes, the steps would be inside
-        the insert function.
-
-    Tightly Coupled
-        Can show the steps of insert, and can insert and delete nodes easily,
-        When the EERTREE inserts or deletes, those functions would do the representation
-        logic, or call something that will do the logic.
-        This also makes sense if we provide the sudo code and highlight each part when 
-        the DS is doing that part.
-        Tightly coupled is bad for if we want to add a new algorithm, or want to make changes 
-        in the future, Bad for reusability and flexibility.
-        In our project we only want to visualize this EERTREE so I think the trade-offs fit
-
-- Actually drawing the EERTREE and all visualization parts are going to be very new to me 
-so I will be learning how to do all of that during the project.
-    I was thinking about having all nodes be in rows and columns
-
-
-# User input
-
-There are so many inputs
-
-    Character key press
-    paste
-    delete
-    drag and drop
-    Select
-        cntrl + shift + arrow keys
-    arrow keys
-    cntrl + arrow keys
-    
-
-We can disable certain inputs for now an focus on what should happen for the main inputs
-
-There is not queue or Deque DS in JavaScript but the arrays use these methods that support
-them
-
-Now how do I put the characters into a queue, How many different methods and events
-to consider?
-
-    1. Character input
-        a. at the begining
-        b. at the middle
-        c. at the end
-    2. Character Delete
-        a. at the begining
-        b. at the middle
-        c. at the end
-    3. Multiple Character input (Paste, drag and drop)
-        Disabled paste and drag and drop for now
-        Need to know where the caret started at so after you paste I know how much you pasted
-        or dragged, drag and drop is highlighted
-    4. Multiple Character delete (highlight and delete)
-        Can treat each delete from start to end as single character delete
-        Highlight + delete/backspace/character input/paste
-    5. Cntrl z and cntl shift z will be very complicated
-        Handling this is very hard i can however just process the new input completely
-        or delete the whole text in the text area
-        or reload the page
-
-To know where the Character input and delete is at, we need to know
-
-    1. The previous string before the change
-    2. Caret Position
-    3. For multiple insert or delete we need to know what is highlighted
-
-The queue will steadily take elements out
-Always keep the invariant of the Caret Position
-
-Need to know where the queue is at in terms of index of the string
-Also creates 2 more states, 
-    1. before queue index
-    2. after queue index
-
-Does not support these yet
-    1. cntrl z and alike
-    2. drag and drop
-
-Does Support
-    1. Add and delete from begining, middle, and end
-    2. paste
-    3. highlight and delete/backspace/character input/paste
-
-Want to keep the invariant of the 
-    1. Caret position
-    2. An array that is synchronized with the text area
-
-What the data stream to the EERTREE DS should have
-    1. pause
-    2. resume
-    3. change index - call method to delete nodes in EERTREE
-    4. If at end of array have a promise to wait for new input
-    5. get index
-    6. the method the queue will call on repeat will be insert in EERTREE
-
-How does the EERTREE communicate with the queue?
-    the EERTREE will ask for a character to insert repeatedly, set on an interval
-    if we change the index we only really want to move the index backward
-    so deleting some nodes in the DS.
-    I don't want the input handling, queue, and the eertree to be coupled
-    the queue would need to send a message to the DS saying delete these characters
-    or the queue will call a method that deletes those characters
-
-    the pause, resume, change index will be called by the input handler
-
+This is meant to be used as a leanring tool to understand how the Data structure works
 
 ## EERTREE
 
-Want to have insert and delete functions for our EERTREE
+This is a relatively new data structure made in 2015. The Eertree is a Data structure
+for palindrome-related algorithmic problems.
+Problems like Search, counting, factorization, RNA studiesm affix trees and affix arrays.
 
-About EERTREE
+Here are a couple problems you might recognize, see if you can think of how to use this DS.
 
-GOing to be going over the paper on EERTREE from 2015 
-Data Structure for palindrome-related algorithmic problems.
-Search, counting, factorization, RNA studies, affix trees and affix arrays.
+1. https://leetcode.com/problems/longest-palindromic-substring/description/
+2. https://adventofcode.com/2023/day/13
+3. https://oj.uz/problem/view/APIO14_palindrome
 
-This is a tree good for preprocessing but we are using it in an online fashion
-where we will be inserting and deleting as we go
+These problems are really hard !!
 
-Number of nodes in the directed graph equals the number of distinct palindromes
-inside the string.
+The basic verison of EERTREE use has a single function add(Character c) and returns 0 or 1
+based on the number of nodes it adds from adding that character.
 
-For n = string size and k = number of distinct characters
-The algorithm needs O(n log(k)) time and O(n) space
-For a random string, the expected space is O(sqrt(nk))
+It can be proven that If the EERTREE processed String S already then Sc will have at most
+1 palindrome which is not a substring of S.
 
-The Motive of the EERTREE is to find distinct subpalindromes
-subpalindromes = a substring of string S that is a palindrome
+Each node in the EERTREE holds the suffix link, the length, and a map of the edges. The edges
+will be similar to a Trie where we store them as Map<Character, Node>. The suffix link is an edge
+that points to the biggest suffix that makes this palindrome.
+This is why we have 2 root nodes, 
+1. Imaginary Node or Odd Root Node, has length -1
+2. Empty node or Even Root Node, has length 0
+
+
+1. Number of nodes in the directed graph equals the number of distinct palindromes inside the string.
+2. For n = string size and k = number of distinct characters. The algorithm needs O(n log(k)) time and O(n) space. For a random string, the expected space is O(sqrt(nk))
+
+Other algorithms exist like Manacher's algorithm but that only finds the maximal radius in a string.
+
+Subpalindromes = a substring of string S that is a palindrome
 it has center (l + r) / 2 and radius ((r - l + 1) / 2)
 which means the length = (r - l + 1)
 The raius is important because that is half the string so you can think
 of a palindrome as xAx where x is a string and A is the center
-
-Basic version supports one operation add(c) which adds c to the processed string
-from the right and updates the DS. Returns the number of new palindromes that 
-are in the string.
-
-
-
-Lemma 2.1
-
-S is a string and c is a character. Sc contains at most one palindrome 
-which is not a substring of S. This new palindrome is the longest suffix-palindrome 
-of Sc.
-
-To get the number of distinct subpalindromes of S, just return the maximum
-number of a node in eertree.
-
-add(c) returns 0 or 1
-
-each node stores the length of its palindrome.
-
-Initialization:
-
-2 special nodes are added
-    empty string - length 0 number 0
-    imaginary string - length -1 and number -1
-
-Edges:
-
-if c is a character, v and cvc are two nodes, then an edge labeled by c goes from v to cvc
-v ->(c) cvc
-edge labeled by c goes from the node 0 to the node labeled by cc if it exists.
-This is why we need two initial nodes.
-
-Each node stores edges in a dictionary, <Character, destintation Node>
-this effectively labels the edge
-
-This is similar to a trie
-
-Suffix link is unlabeled and connects u to v if v is the longest proper 
-suffix-palindrome of u
 
 
 Facts:
@@ -297,34 +72,101 @@ Whereas Tries can have n^2 size if built from the set of all suffixes of a lengt
 
 Implementing Add:
 
-Need to keep an instance of a max suffix node of S
-We want the max Suffix since the suffix is at the end so this also means
-this is the last node in the tree but also now we can traverse the suffixes
-so this is like the root of the suffix tree now we go through links up the tree
-
-Traverse the suffix palindromes of S in order of decreasing length
-For each palindrome we read its length k and compare S[s.length() - k - 1]
-against the new character c until they are equal or if we get to the -1 node
-
-That is how we get the maximum suffix-palindrome Q of Sc
-
-Then we check if Q has an outgoing edge labeled by c
-If it is then we create a new node P which is the palindrome cQc
-we add 2 to the Q.len, if Q = -1 the imaginary node
-then P suffix link is -1 otherwise continue traversing suffix palindromes 
-of S starting with suffix link of Q
-
-Now we have a new max Suffix 
-
-Put the max suffixes into the stack and update the parent
-
+Keep track of the max suffix node of S. We will be using this node which is at the bottom
+to traverse the suffix links, which point upwards to the root nodes.
+We traverse those nodes via suffix links until we get the the root node or we get to
+the same character we are trying to insert by checking S[S.length() - k - 1] and 
+k = the node's length. Once this is true then we have the node that is a Q 
+the maximum suffix-palindrome of Sc. So the new palindrome is cQc.
 
 Implementing Delete:
 
-Put nodes into a stack so we can delete them with pop()
-We also need to update the parent of that node, each child has one parent
-so we need to store that in the Node
+We need to keep track of all the max suffix nodes at S, Sc, Scc, Sccc, ..., Sc...n. 
+This way we can put them into a stack and then and restore that state. The Paper goes over 2 
+ways to make add more efficient so the suffix links do not have to traverse so far.
 
+# Citation Check this out!!
+
+Mikhail Rubinchik, Arseny M. Shur,
+EERTREE: An efficient data structure for processing palindromes in strings,
+European Journal of Combinatorics,
+Volume 68,
+2018,
+Pages 249-265,
+ISSN 0195-6698,
+https://doi.org/10.1016/j.ejc.2017.07.021.
+(https://www.sciencedirect.com/science/article/pii/S0195669817301294)
+Abstract: We propose a new linear-size data structure which provides a fast access to all palindromic substrings of a string or a set of strings. This structure inherits some ideas from the construction of both the suffix trie and suffix tree. Using this structure, we present simple and efficient solutions for a number of problems involving palindromes.
+
+## Design 
+
+When Desiging this I wanted to have a couple of features
+
+1. Support changing Algorithms at runtime
+2. Want to draw the Tree
+3. Want real time updates as you type
+
+Supporting different algorithms would have been using the Strategy pattern but
+the EERTREE is a Data structure and not solving a speific problem so we cut that out.
+
+Effectively we have 4 parts to this project
+
+1. Handling the input
+2. Creating a consistent stream of inputs to my data structure
+3. the EERTREE DS itself
+4. Visualization
+
+Each of these parts should be decoupled from each as much as possible. Want the input handling
+to be nice and clean. I did not want to have a button which triggered a function to draw the
+tree. Each character input is an event so I wanted real time updates like that. That system however is very complex, and I may have some bugs regardless of how hard i try to tackle them.
+There are so many different ways to input and delete and drag and drop. We can cancel some of these things but want to keep most enabled and handle those events. The cntl z and those events are really hard because those do not trigger events in JavaScript. It would be really cool if this is the only input and we have realtime updates to the tree. Adding to the tree
+one character at a time is fast, should be O(log(256)). People usually type characters at the 
+end and delete at the end, those 2 cases are really easy and the average cases.
+```
+    Character key press
+    paste
+    delete
+    drag and drop
+    Select
+        cntrl + shift + arrow keys
+    arrow keys
+    cntrl + arrow keys
+``` 
+
+This adds some edge cases 
+
+    1. Character input
+        a. at the begining
+        b. at the middle
+        c. at the end
+    2. Character Delete
+        a. at the begining
+        b. at the middle
+        c. at the end
+    3. Multiple Character input (Paste, drag and drop)
+        Disabled paste and drag and drop for now
+        Need to know where the caret started at so after you paste I know how much you pasted
+        or dragged, drag and drop is highlighted
+    4. Multiple Character delete (highlight and delete)
+        Can treat each delete from start to end as single character delete
+        Highlight + delete/backspace/character input/paste
+    5. Cntrl z and cntl shift z will be very complicated
+        Handling this is very hard i can however just process the new input completely
+        or delete the whole text in the text area
+        or reload the page
+
+We need to keep some invariant conditions 
+
+1. The caret index
+2. The previous selection
+3. the current string in the text area
+
+Because the select and delete are 2 different events we need to know what was selected previously. The caret index and current string in the text area are important for the 
+queue.
+
+Does not support:
+Cntrl Z and some other cntrl functions, and all drag and drop.
+If you select some text and click the selected part it does not update the previous selection
 
 
 # Visualization
@@ -379,60 +221,14 @@ Problems
 
 Library Vis.js
 
-    looks like what I need, the network visualization is perfect
-
-    Network Class
-    Parameters
-
-    Container
-        The HTML element where the network visualization will be displayed
-    Data(DataSets)
-        Contains the actual information about nodes and edges, this is how we add or remove nodes and edges
-    Options
-        Define properties and configurations for the network likw color, edge style and physics, etc.
-    
-    optional inputs
-    Manipulation -> Enables user iteraction for adding, deleting, or editing nodes and edges in the visualization.
-    Physics -> Defines how nodes interact with each other based on physics
-    Events -> event handling
-    Groups -> Categorize groups of nodes and edges for custom styling or behavior
-
-    Only optional one that we may use is the groups
-    We want to put the 2 different kinds of edges into groups
+This library is perfect for making a graph using their network visualizations. It uses
+data sets for the nodes and edges and you can add them from there. This makes drawing
+the graph much easier. It also resizes if you need to and lets the user play around with it.
 
 
-    Data
-        Make Data Sets
-        Datasets for Nodes and edges
-        Nodes need an id
-        optional label, group, title, etc.
+## Next Features to Consider
 
-        Edges need from NodeId to NodeId
-        optional id, label, arrows, color
-    
-    Use levels for the hierarchy so everything is nice and neat
+- Adding highlighting to each node to show the steps of how it inserts a character. 
+- Improving the input but supporting cntrl functions and drag and drop
+- there may still be some bugs so catch those and do more testing
 
-    How to highlight the nodes we visit?
-        We can have a highlight function
-        Only highlight the node
-        How long do we highlight a node
-        interval time the same as the inputStream interval
-        or interval / n n = total number of nodes
-        I think interval time is best
-        so add will take in an interval as well.
-
-
-
-
-# Citation Check this out!!
-
-Mikhail Rubinchik, Arseny M. Shur,
-EERTREE: An efficient data structure for processing palindromes in strings,
-European Journal of Combinatorics,
-Volume 68,
-2018,
-Pages 249-265,
-ISSN 0195-6698,
-https://doi.org/10.1016/j.ejc.2017.07.021.
-(https://www.sciencedirect.com/science/article/pii/S0195669817301294)
-Abstract: We propose a new linear-size data structure which provides a fast access to all palindromic substrings of a string or a set of strings. This structure inherits some ideas from the construction of both the suffix trie and suffix tree. Using this structure, we present simple and efficient solutions for a number of problems involving palindromes.
