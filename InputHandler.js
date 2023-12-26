@@ -1,3 +1,13 @@
+/**
+ * This file takes care of all of the input handling that comes from the text area
+ * There are so many ways to input text so we want to try our hardest to keep some 
+ * invariant conditions
+ * 1. Deque = the text in the text area currently
+ * 2. caretIndex = the index of the caret(the blinking |)
+ * 3. The previous selection
+ */
+
+
 let deque = [];
 let caretIndex = 0;
 let previousSelection = [];
@@ -11,7 +21,7 @@ speedSlider.addEventListener('input', () => {
     dataStream.setSpeedInterval(intervalSpeed);
 });
 
-
+// the datastream we use to feed the EERTREE characters at the interval speed
 const dataStream = createDataStream(deque, insertToy, deleteToy, intervalSpeed);
 
 
@@ -24,6 +34,8 @@ textInput.addEventListener('keyup', handleArrows);
 textInput.addEventListener('blur', keepTextAreaFocused);
 textInput.addEventListener('paste', multipleInput);
 
+
+// Disable all Drag and Drop functionality
 textInput.addEventListener('dragstart', disable);
 textInput.addEventListener('dragenter', disable);
 textInput.addEventListener('dragover', disable);
@@ -37,18 +49,18 @@ function disable(event) {
     event.preventDefault();
 }
 
-
+// gets the caret position and also keeping the previos selection invariant condition
 function caretPos(event){
     caretIndex = textInput.selectionStart
     setSelect(event)
 }
 
-
+// Helps with the caret index invariant condition
 function keepTextAreaFocused() {
     textInput.focus();
 }
 
-
+// Processes the character inputs, If something is selected previously we delete it 
 function characterInput(event) {
     dataStream.pause();
     const inputType = event.inputType;
@@ -60,10 +72,10 @@ function characterInput(event) {
         // Character input - insert into the deque at the caret index
         const insertedChar = event.data;
         deleteSelect();
-        deque.splice(caretIndex, 0, insertedChar);
         if(streamIndex > caretIndex){
             dataStream.setIndex(caretIndex);
         }
+        deque.splice(caretIndex, 0, insertedChar);
     }
     else if (inputType === 'deleteContentBackward') {
         deleteSelect();
@@ -91,7 +103,7 @@ function characterInput(event) {
     dataStream.resume();
 }
 
-
+// This is Cntrl V
 function multipleInput(event) {
     dataStream.pause();
     deleteSelect();
@@ -104,13 +116,13 @@ function multipleInput(event) {
     dataStream.resume();
 }
 
-
+// for the previous selection invariant
 function setSelect(event){
     previousSelection[0] = textInput.selectionStart;
     previousSelection[1] = textInput.selectionEnd;
 }
 
-
+// For the caret position invariant
 function handleArrows(event) {
     const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
     
@@ -121,7 +133,8 @@ function handleArrows(event) {
 
 /**
  * Assumed that the datastream is paused currently!
- * 
+ * There is not event for if something is selected and then deleted
+ * so we keep track of the previous selection and call this function
  */
 function deleteSelect(){
     const streamIndex = dataStream.getIndex();

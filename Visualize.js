@@ -1,6 +1,17 @@
+/**
+ * Class that holds all the visualization functions for the EERTREE
+ */
 class Visualize {
+    /**
+     * Take the 2 roots of the EERTREE, the 2 begining nodes
+     * The imaginary node or the Odd root node
+     * and the Empty node or the even root node
+     * Initializes the network which is part of Vis.js
+     * @param {Node} imaginary 
+     * @param {Node} empty 
+     */
     constructor(imaginary, empty){
-        this.container = document.getElementById('visContainer');
+        let container = document.getElementById('visContainer');
         let nodesData = [];
         nodesData.push(this.createNode(imaginary));
         nodesData.push(this.createNode(empty));
@@ -14,7 +25,7 @@ class Visualize {
             nodes: nodes,
             edges: edges
         };
-        this.options = {
+        let options = {
             nodes:{
                 color: {
                     
@@ -25,7 +36,7 @@ class Visualize {
             },
         };
 
-        this.network = new vis.Network(this.container, this.data, this.options);
+        this.network = new vis.Network(container, this.data, options);
     }
 
     
@@ -47,13 +58,13 @@ class Visualize {
         };
     }
 
-    // Switch the logic so the sortMethod: 'directed' makes the tree correctly
-    createLink(toNode, fromNode){
+
+    createLink(fromNode, toNode){
         return {
             from: fromNode.id,
             to: toNode.id,
             dashes: true,
-            arrows:'from',
+            arrows:'to',
         }
     }
 
@@ -65,8 +76,6 @@ class Visualize {
 
     delNode(node){
         this.data.nodes.remove(node.id);
-        const edgesToRemove = this.data.edges.get().filter(edge => edge.from === node.id || edge.to === node.id);
-        edgesToRemove.forEach(edge => this.data.edges.remove(edge.id));
     }
 
 

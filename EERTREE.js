@@ -4,21 +4,21 @@ class Node {
         this.link = suffix; // Suffix link points to another node
         this.length = len; // Length of the palindrome represented by this node
         this.palindrome = "";
-        this.id = id;
-        this.level = level;
+        this.id = id; // ID for the visualization, each node needs an id for reference
+        this.level = level; // Level for the visualization hierarchy
     }
 }
 
 class Eertree {
     constructor() {
-        this.count = 0;
+        this.count = 0; // This is how we denote the ID
         this.nodes = []; // Stack of nodes for deletion only holds nodes of T not the imaginary or empty nodes
         this.imaginary = new Node(-1, null, this.count++, 1); // also called odd length root node
         this.empty = new Node(0, this.imaginary, this.count++, 2); // also called even length root node
         this.maxSuffixOfT = this.empty; // this is the current node we are on also the maximum Suffix of tree T
         this.s = ""; // String processed by the Eertree
-        this.nodes.push(this.maxSuffixOfT);
-        this.visual = new Visualize(this.imaginary, this.empty);        
+        this.nodes.push(this.empty);
+        this.visual = new Visualize(this.imaginary, this.empty); // Instance to the Visual class that has all the visualization functions
     }
 
 
@@ -30,7 +30,7 @@ class Eertree {
      * @param {Character} c 
      * @returns int 1 if it created a new node an 0 otherwise
      */
-    add(c, interval){
+    add(c){
         /**
          * Traverse the suffix palindromes of T in the order of decreasing length
          * Keep traversing until we get to imaginary node or until T[len - k] = a
@@ -55,10 +55,13 @@ class Eertree {
 
         let Q = getMaxSuffixPalindrome(this.maxSuffixOfT, c);
         let createNewNode = !(Q.edges.has(c));
-        
+        if(Q.link === null){
+            console.log("Q null ", Q, this.maxSuffixOfT);
+        }
         if(createNewNode){
             let P = new Node();
-            P.length = Q.length + 2; // this is because Q is a palindrome and the suffix and prefix == c so cQc = P
+            P.length = Q.length + 2; 
+            // this is because Q is a palindrome and the suffix and prefix == c so cQc = P
             //P.length == 1 if Q is the imaginary node
             if(P.length === 1){
                 P.link = this.empty;
@@ -80,11 +83,14 @@ class Eertree {
             P.parent = Q;
             Q.edges.set(c, P);
             
+            // Draw the node edge and suffix link
             this.visual.addNode(P);
             this.visual.addEdge(Q, P, c);
             this.visual.addLink(P, P.link);
         }
         else{
+            // This is for when the node is already made, we want to put in a null node
+            // so that when we delete we can just delete the top node every time
             this.nodes.push(null);
         }
         this.maxSuffixOfT = Q.edges.get(c);
@@ -99,6 +105,7 @@ class Eertree {
      * change maxSuffixOfT
      * Update s
      * update the parent 
+     * if the node was null we the last node that is not null
      */
     delete(){
         let delNode = this.nodes.pop();
@@ -108,24 +115,25 @@ class Eertree {
             delNode.parent.edges.delete(c);
             this.visual.delNode(delNode);
         }
-        for(let i = this.nodes.length - 1; i > 0; i--){
+        for(let i = this.nodes.length - 1; i >= 0; i--){
             if(this.nodes[i] !== null){
                 this.maxSuffixOfT = this.nodes[i];
-                break;
+                return;
             }
         }
     }
 }
 
+// The instance of Eertree we will use with the methods we feed into the input stream
 let eertree = new Eertree();
 const insertToy = (c) =>{
     eertree.add(c);
-    console.log("Inserted " + c);
-    console.log(eertree.nodes);
+    //console.log("Inserted " + c);
+    //console.log(eertree.nodes);
 };
 
 const deleteToy = (c) =>{
     eertree.delete();
-    console.log("Deleted " + c);
-    console.log(eertree.nodes);
+    //console.log("Deleted " + c);
+    //console.log(eertree.nodes);
 };
