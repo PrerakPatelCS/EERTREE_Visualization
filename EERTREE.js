@@ -4,6 +4,7 @@ class Node {
         this.link = suffix; // Suffix link points to another node
         this.length = len; // Length of the palindrome represented by this node
         this.palindrome = "";
+        this.parent = null; // this is for delete 
         this.id = id; // ID for the visualization, each node needs an id for reference
         this.level = level; // Level for the visualization hierarchy
     }
@@ -109,10 +110,16 @@ class Eertree {
      */
     delete(){
         let delNode = this.nodes.pop();
+        if(delNode === this.empty){
+            this.nodes.push(delNode);
+            return;
+        }
         if(delNode !== null){
             this.s = this.s.substring(0, this.s.length - 1);
             let c = delNode.palindrome[0];
-            delNode.parent.edges.delete(c);
+            if(delNode.parent !== null){
+                delNode.parent.edges.delete(c);
+            }
             this.visual.delNode(delNode);
         }
         for(let i = this.nodes.length - 1; i >= 0; i--){

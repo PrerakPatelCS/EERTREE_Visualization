@@ -231,4 +231,5 @@ the graph much easier. It also resizes if you need to and lets the user play aro
 - Adding highlighting to each node to show the steps of how it inserts a character. 
 - Improving the input but supporting cntrl functions and drag and drop
 - there may still be some bugs so catch those and do more testing
+- When testing WASITACARORACATISAW then adding e in the front bugs
 
