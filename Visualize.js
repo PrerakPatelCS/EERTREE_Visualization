@@ -17,26 +17,38 @@ class Visualize {
         nodesData.push(this.createNode(empty));
         let nodes = new vis.DataSet(nodesData);
         let edgesData = [];
-        edgesData.push(this.createLink(empty, imaginary));
-        edgesData.push(this.createLink(imaginary, imaginary));
+        this.edgeID = 0;
+        edgesData.push(this.createLink(imaginary, imaginary, this.edgeID++));
+        edgesData.push(this.createLink(empty, imaginary, this.edgeID++));
         edgesData.push({from: imaginary.id, to:empty.id, hidden:true});
         let edges = new vis.DataSet(edgesData);
+        
         this.data = {
             nodes: nodes,
             edges: edges
         };
-        let options = {
+        this.options = {
             nodes:{
                 color: {
-                    
+                    background: "#F03967",
+                    border: "#713EyF",
+                    highlight: {
+                        background: "blue",
+                        border: "black"
+                    }
                 },
+            },
+            edges:{
+                color: {
+                    inherit: false,
+                }
             },
             layout:{
                 hierarchical: true
             },
         };
 
-        this.network = new vis.Network(container, this.data, options);
+        this.network = new vis.Network(container, this.data, this.options);
     }
 
     
@@ -59,22 +71,26 @@ class Visualize {
     }
 
 
-    createLink(fromNode, toNode){
+    createLink(fromNode, toNode, id){
         return {
             from: fromNode.id,
             to: toNode.id,
             dashes: true,
             arrows:'to',
+            id: id,
         }
     }
 
 
-    addNode(node){
+    async addNode(node){
         this.data.nodes.add(this.createNode(node))
+        await sleep(intervalSpeed);
+        
     }
 
 
-    delNode(node){
+    async delNode(node){
+        await sleep(1000);
         this.data.nodes.remove(node.id);
     }
 
@@ -85,6 +101,39 @@ class Visualize {
 
 
     addLink(fromNode, toNode){
-        this.data.edges.add(this.createLink(fromNode, toNode))
+        this.data.edges.add(this.createLink(fromNode, toNode, this.edgeID));
+        return this.edgeID++;
+    }
+
+    async highlight(node){
+        console.log("begin" + new Date().toLocaleTimeString());
+
+        await sleep(intervalSpeed);
+        this.network.selectNodes([node.id], [true]);
+        await sleep(intervalSpeed);
+        this.network.selectEdges([node.edgeID]);
+        await sleep(intervalSpeed);
+        this.network.unselectAll();
+
+        console.log("end" + new Date().toLocaleTimeString());
+
+    }
+
+    highlightStep(step){
+        step.classList.add('glow');
+    }
+
+    unhighlightStep(step){
+        step.classList.remove('glow');
     }
 }
+
+
+/**
+ * TODO
+ * 1. Make the visualization and show the steps
+ * 2. Have psuedocode on the side and highlight what step we are on
+ * 3. Add text and links to explain the data structure
+ * 4. Add a way to change the theme from white to dark background
+ * 
+ */

@@ -13,6 +13,10 @@ let caretIndex = 0;
 let previousSelection = [];
 const textInput = document.getElementById('textInput');
 const speedSlider = document.getElementById('speedSlider');
+const line1 = document.getElementById('line1');
+const line2 = document.getElementById('line2');
+const line3 = document.getElementById('line3');
+
 
 let intervalSpeed = parseInt(speedSlider.value);
 
