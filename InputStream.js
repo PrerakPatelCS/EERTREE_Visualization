@@ -1,14 +1,7 @@
-
 function sleep(time) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
 
-/**
- * Might have to make this an async function
- * Only want 1 iterate array
- * 
- * 
- */
 
 /**
  * This is the data stream, the array will be a string or array of characters

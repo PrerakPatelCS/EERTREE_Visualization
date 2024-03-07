@@ -33,9 +33,16 @@ body {
 
 .code {
     border: 1px solid #ccc;
-    margin: 5px;
+    margin: 0 5px;
     padding: 5px;
     transition: box-shadow 0.3s ease-in-out;
+}
+
+.code h5 {
+    font-size: 18px;
+    color: #333;
+    margin: 0;
+    padding: 0;
 }
 
 .explanation {
@@ -46,11 +53,27 @@ body {
     padding: 5px;
 }
 
-.glow {
-    box-shadow: 0 0 10px rgba(255, 255, 0, 0.7);
+.explanation ul {
+    margin: 5px;
+
 }
 
-@media (max-width: 600px){
+.explanation p {
+    margin-top: 5px;
+    margin-bottom: 0;
+    padding: 0px;
+
+}
+
+.glow {
+    box-shadow: 0 0 20px rgba(10, 10, 7, 0.7);
+}
+
+.indent {
+    margin-left: 50px;
+}
+
+@media (max-width: 1500px){
     .text-container {
         width: 100%;
     }
@@ -62,8 +85,8 @@ body {
 
 
 .visContainer {
-    width: 59%;
-    height: 80vh;
+    width: 65%;
+    height: 100vh;
     border: 1px solid #ccc;
 
 }

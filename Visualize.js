@@ -31,15 +31,15 @@ class Visualize {
             nodes:{
                 color: {
                     background: "#F03967",
-                    border: "#713EyF",
+                    border: "#000000",
                     highlight: {
-                        background: "blue",
-                        border: "black"
+                        background: "#F0C698",
+                        border: "#000000"
                     }
                 },
             },
             edges:{
-                color: {
+                color:{
                     inherit: false,
                 }
             },
@@ -67,6 +67,10 @@ class Visualize {
             to: toNode.id,
             label: c,
             arrows: 'to',
+            color: {
+                color: "#ff7f50",
+                highlight: "#ffa500",
+            },
         };
     }
 
@@ -78,6 +82,10 @@ class Visualize {
             dashes: true,
             arrows:'to',
             id: id,
+            color: {
+                color: "#0a75ad",
+                highlight: "#3399ff",
+            },
         }
     }
 
@@ -90,7 +98,7 @@ class Visualize {
 
 
     async delNode(node){
-        await sleep(1000);
+        await sleep(intervalSpeed);
         this.data.nodes.remove(node.id);
     }
 
@@ -106,16 +114,15 @@ class Visualize {
     }
 
     async highlight(node){
-        console.log("begin" + new Date().toLocaleTimeString());
+        //console.log("begin" + new Date().toLocaleTimeString());
 
         await sleep(intervalSpeed);
         this.network.selectNodes([node.id], [true]);
         await sleep(intervalSpeed);
         this.network.selectEdges([node.edgeID]);
-        await sleep(intervalSpeed);
         this.network.unselectAll();
 
-        console.log("end" + new Date().toLocaleTimeString());
+        //console.log("end" + new Date().toLocaleTimeString());
 
     }
 
@@ -127,13 +134,3 @@ class Visualize {
         step.classList.remove('glow');
     }
 }
-
-
-/**
- * TODO
- * 1. Make the visualization and show the steps
- * 2. Have psuedocode on the side and highlight what step we are on
- * 3. Add text and links to explain the data structure
- * 4. Add a way to change the theme from white to dark background
- * 
- */
