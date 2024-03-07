@@ -1,3 +1,8 @@
+function sleep(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
+}
+
+
 /**
  * This is the data stream, the array will be a string or array of characters
  * The insert and delete functions insert and delete to the EERTREE Data structure
@@ -11,35 +16,36 @@
  * @returns 
  */
 function createDataStream(array, insertChar, deleteChar, interval){
-    let timerId;
     let currentIndex = 0;
     let paused = false;
     let prev = [];
     let speedInterval = interval;
+    let inIterateArray = false;
 
-    const iterateArray = () => {
-        if(paused) return;
-        if(currentIndex < array.length){
+    const iterateArray = async () => {
+        while(!paused && currentIndex < array.length){
+            inIterateArray = true;
+            await sleep(speedInterval);
             const c = array[currentIndex++];
             prev.push(c);
-            insertChar(c);
+            await insertChar(c);
         }
-        else{
-            pause();
-        }
-    };
+        inIterateArray = false;
+        pause();
+    }
 
 
     const pause = () => {
-        clearInterval(timerId);
         paused = true;
     }
 
 
     const resume = () => {
-        if(!paused) return;
         paused = false;
-        timerId = setInterval(iterateArray, speedInterval);
+        if(!inIterateArray){
+            iterateArray();
+        }
+        
     }
 
 
@@ -59,16 +65,8 @@ function createDataStream(array, insertChar, deleteChar, interval){
 
     const setSpeedInterval = (num) => {
         speedInterval = num;
-        if(paused)
-           return;
-        else{
-            pause();
-            resume();
-        }
     }
 
-
-    timerId = setInterval(iterateArray, speedInterval);
 
     // The functions we can use in input handling
     return {

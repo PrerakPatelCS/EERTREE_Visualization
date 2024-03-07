@@ -13,6 +13,15 @@ let caretIndex = 0;
 let previousSelection = [];
 const textInput = document.getElementById('textInput');
 const speedSlider = document.getElementById('speedSlider');
+// These are the lines of code in the pseudocode that we highlight
+const line1 = document.getElementById('maxSuffixPalindrome');
+const line2 = document.getElementById('QgetMSP');
+const line3 = document.getElementById('ifBlock1');
+const line4 = document.getElementById('ifBlock2');
+const line5 = document.getElementById('elseBlock');
+const line6 = document.getElementById('getLink');
+
+
 
 let intervalSpeed = parseInt(speedSlider.value);
 
@@ -31,7 +40,8 @@ textInput.addEventListener('select', setSelect);
 textInput.addEventListener('click', caretPos);
 textInput.addEventListener('focus', caretPos);
 textInput.addEventListener('keyup', handleArrows);
-textInput.addEventListener('blur', keepTextAreaFocused);
+// keep focused getting annoying and stops user from clicking links
+//textInput.addEventListener('blur', keepTextAreaFocused);
 textInput.addEventListener('paste', multipleInput);
 
 

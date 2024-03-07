@@ -18,11 +18,124 @@
     </div>
 
     <div class="container">
-        <input type="range" min="100" max="2000" value="1000" class="slider" id="speedSlider" step="100">
+        <input type="range" min="1000" max="5000" value="3000" class="slider" id="speedSlider" step="500">
     </div>
 
+    <div class="flex-container">
+        <!-- Code for getMaxSuffixPalindrome -->
+        <div class="text-container">
+            <div class="code" id="maxSuffixPalindrome">
+                <h5>get the Max Suffix Palindrome (Node max Suffix Palindrome, Character c)</h5>
+                <div class="code indent">
+                    <div class="code">
+                        <h5>Starting from the max suffix palindrome of the tree</h5>
+                    </div>
+                    <div class="code">
+                        <h5>Traverse through the suffix links until the character in the string before the suffix palindrome is c or we reach the imaginary node</h5>
+                    </div>
+                    <div class="code">
+                        <h5>return the max Suffix Palindrome of Q+c</h5>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Code for add(c) -->
+            <div class="code">
+                <h5>add(c)</h5>
+                <div class="code indent">
+                    <div class="code" id="QgetMSP">
+                        <h5>Q = max Suffix Palindrome of tree T</h5>
+                    </div>
+                    <div class="code" id="ifBlock1">
+                        <h5>if Q does not have an edge c</h5>
+                        <div class="code indent">
+                            <div class="code">
+                                <h5>P = new Node</h5>
+                            </div>
+                            <div class="code">
+                                <h5>P.length = Q.length + 2</h5>
+                            </div>
+                            <div class="code" id="ifBlock2">
+                                <h5>if P.length is 1</h5>
+                                <div class="code indent">
+                                    <div class="code">
+                                        <h5>P.link = empty node</h5>
+                                    </div>
+                                    <div class="code">
+                                        <h5>P.palindrome = c</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="code" id="elseBlock">
+                                <h5>else</h5>
+                                <div class="code indent">
+                                    <div class="code" id="getLink">
+                                        <h5>P.link = get max Suffix Palindrome starting from Q</h5>
+                                    </div>
+                                    <div class="code">
+                                        <h5>P.palindrome = c + Q.palindrome + c</h5>
+                                    </div>
+                                    <div class="code">
+                                        <h5>Q.edges add c = P</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="code">
+                        <h5>return 1 if we created a node, 0 otherwise</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visContainer" id="visContainer"></div>
+    </div>
+
+
     <div class="container">
-        <div id="visContainer"></div>
+        <div class="explanation">
+            <p> The EERTREE is a data structure made in 2015 for processing palindromes 
+                efficiently. It has 2 roots
+                    <ul>Imaginary Node also called the odd length root, has length -1</ul>
+                    <ul>Empty Node also called the even length root, has length 0</ul>
+                Each node in the tree is a palindrome and traditionally they store:
+                    <ul>length</ul>
+                    <ul>edges to neighbors, Character -> Node these nodes are orange</ul>
+                    <ul>suffix links, this is dashed and the color blue</ul>
+                It only has the add function that adds a character to the tree. Lets say
+                we have a tree T and want to add the character c such that we can make T+c. 
+                We start at the max suffix palindrome from T and find the biggest node 
+                such that the after the node we get the character c. This will build a new 
+                palindrome c (Node.palindrome) c, and we will keep traversing the suffix links 
+                until we have this new palindrome or if we get to the imaginary node.
+                
+                <p>
+                    The add(c) function has 
+                    <ul>Time Complexity: O(log(a)) s.t. a = size of alphabet</ul>
+                    <ul>Space Complexity: O(n) s.t. n = the size of the string</ul>
+
+                    Each add only adds 1 or 0 nodes to the tree so if we add n nodes we
+                    will at most have n nodes. If the alphabet is only characters then 
+                    we can make this log(256) which is a constant and say this only
+                    takes O(1) time however because this is a data structure we can have 
+                    our own object and create our own alphabet of any size.
+                </p>
+            </p>
+            <p>
+                Here are some test cases you can try:
+                <ul>WASITACARORACATISAW</ul> <!-- <button class="copyButton">Copy Text</button> -->
+                <ul>eertree</ul>
+                <ul>racecar</ul>
+                <ul>rats live on no evil star</ul>
+            </p>
+            <p>
+                Here are some links about the EERTREE, I did the Javascript version for the 
+                Rosetta Code of this data structure.
+            </p>
+            <ul><a href="https://www.sciencedirect.com/science/article/pii/S0195669817301294" target="_blank">Research Paper</a></ul>
+            <ul><a href="https://rosettacode.org/wiki/Eertree" target="_blank">Rosetta Code</a></ul>
+        </div>
     </div>
 
     <script type="text/javascript" src="Visualize.js"></script>

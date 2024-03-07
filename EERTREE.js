@@ -1,21 +1,23 @@
 class Node {
-    constructor(len, suffix, id, level) {
+    constructor(len, suffix, nodeID, level, edgeID) {
         this.edges = new Map(); // edges <Character, Node>
         this.link = suffix; // Suffix link points to another node
         this.length = len; // Length of the palindrome represented by this node
         this.palindrome = "";
         this.parent = null; // this is for delete 
-        this.id = id; // ID for the visualization, each node needs an id for reference
+        this.id = nodeID; // ID for the visualization, each node needs an id for reference
+        this.edgeID = edgeID;
         this.level = level; // Level for the visualization hierarchy
     }
 }
 
 class Eertree {
     constructor() {
-        this.count = 0; // This is how we denote the ID
+        this.nodeID = 0; // This is how we denote the ID
+        let edgeID = 0; // Denotes the id of the edge
         this.nodes = []; // Stack of nodes for deletion only holds nodes of T not the imaginary or empty nodes
-        this.imaginary = new Node(-1, null, this.count++, 1); // also called odd length root node
-        this.empty = new Node(0, this.imaginary, this.count++, 2); // also called even length root node
+        this.imaginary = new Node(-1, null, this.nodeID++, 1, edgeID++); // also called odd length root node
+        this.empty = new Node(0, this.imaginary, this.nodeID++, 2, edgeID++); // also called even length root node
         this.maxSuffixOfT = this.empty; // this is the current node we are on also the maximum Suffix of tree T
         this.s = ""; // String processed by the Eertree
         this.nodes.push(this.empty);
@@ -31,7 +33,7 @@ class Eertree {
      * @param {Character} c 
      * @returns int 1 if it created a new node an 0 otherwise
      */
-    add(c){
+    async add(c){
         /**
          * Traverse the suffix palindromes of T in the order of decreasing length
          * Keep traversing until we get to imaginary node or until T[len - k] = a
@@ -39,7 +41,8 @@ class Eertree {
          * @param {Character} a
          * @returns {Node} u
          */
-        const getMaxSuffixPalindrome = (startNode, a) =>{
+        const getMaxSuffixPalindrome = async (startNode, a) =>{
+            this.visual.highlightStep(line1);
             let u = startNode;
             let n = this.s.length;
             let k = u.length;
@@ -47,27 +50,36 @@ class Eertree {
                 if(u === u.link){
                     throw new Error('Infinite Loop');
                 }
+                await this.visual.highlight(u);
                 u = u.link;
                 k = u.length;
             }
+            this.visual.unhighlightStep(line1);
             return u;
         };
 
 
-        let Q = getMaxSuffixPalindrome(this.maxSuffixOfT, c);
+        this.visual.highlightStep(line2);
+        let Q = await getMaxSuffixPalindrome(this.maxSuffixOfT, c);
+        this.visual.unhighlightStep(line2);
+
         let createNewNode = !(Q.edges.has(c));
-        if(Q.link === null){
-            console.log("Q null ", Q, this.maxSuffixOfT);
-        }
+
+        this.visual.highlightStep(line3);
         if(createNewNode){
             let P = new Node();
             P.length = Q.length + 2; 
             // this is because Q is a palindrome and the suffix and prefix == c so cQc = P
             //P.length == 1 if Q is the imaginary node
             if(P.length === 1){
+                this.visual.highlightStep(line4);
+                await sleep(intervalSpeed);
+
                 P.link = this.empty;
                 P.palindrome = c;
                 P.level = this.empty.level + 1;
+
+                this.visual.unhighlightStep(line4);
             }
             else{
                 /**
@@ -75,25 +87,36 @@ class Eertree {
                  * Continue traversing suffix palindromes of T starting with the suffix
                  * we found earlier 's link
                  */
-                P.link = getMaxSuffixPalindrome(Q.link, c).edges.get(c);
+                this.visual.highlightStep(line5);
+                this.visual.highlightStep(line6);
+                await sleep(intervalSpeed);
+
+                let temp = await getMaxSuffixPalindrome(Q.link, c);
+                this.visual.unhighlightStep(line6);
+
+                P.link = temp.edges.get(c);
                 P.palindrome = c + Q.palindrome + c;
                 P.level = Q.level + 1;
+
+                this.visual.unhighlightStep(line5);
             }
-            P.id = this.count++;
+            P.id = this.nodeID++;
             this.nodes.push(P);
             P.parent = Q;
             Q.edges.set(c, P);
             
             // Draw the node edge and suffix link
-            this.visual.addNode(P);
+            await this.visual.addNode(P);
             this.visual.addEdge(Q, P, c);
-            this.visual.addLink(P, P.link);
+            P.edgeID = this.visual.addLink(P, P.link);
         }
         else{
             // This is for when the node is already made, we want to put in a null node
             // so that when we delete we can just delete the top node every time
             this.nodes.push(null);
         }
+        this.visual.unhighlightStep(line3);
+
         this.maxSuffixOfT = Q.edges.get(c);
         this.s += c;
         
@@ -133,13 +156,13 @@ class Eertree {
 
 // The instance of Eertree we will use with the methods we feed into the input stream
 let eertree = new Eertree();
-const insertToy = (c) =>{
-    eertree.add(c);
+const insertToy = async (c) =>{
+    await eertree.add(c);
     //console.log("Inserted " + c);
     //console.log(eertree.nodes);
 };
 
-const deleteToy = (c) =>{
+const deleteToy = async (c) =>{
     eertree.delete();
     //console.log("Deleted " + c);
     //console.log(eertree.nodes);
