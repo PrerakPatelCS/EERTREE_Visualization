@@ -9,6 +9,10 @@ class Node {
         this.edgeID = edgeID;
         this.level = level; // Level for the visualization hierarchy
     }
+
+    toString(){
+        return `Node ID: ${this.id}, Level: ${this.level}, Length: ${this.length}, Palindrome: ${this.palindrome}, Edge ID: ${this.edgeID}`;
+    }
 }
 
 class Eertree {
@@ -22,6 +26,7 @@ class Eertree {
         this.s = ""; // String processed by the Eertree
         this.nodes.push(this.empty);
         this.visual = new Visualize(this.imaginary, this.empty); // Instance to the Visual class that has all the visualization functions
+        this.visual.highlightNode(this.empty);
     }
 
 
@@ -50,7 +55,10 @@ class Eertree {
                 if(u === u.link){
                     throw new Error('Infinite Loop');
                 }
-                await this.visual.highlight(u);
+                this.visual.highlightNode(u);
+                await sleep(intervalSpeed);
+                this.visual.highlightEdge(u);
+                await sleep(intervalSpeed);
                 u = u.link;
                 k = u.length;
             }
@@ -65,8 +73,9 @@ class Eertree {
 
         let createNewNode = !(Q.edges.has(c));
 
-        this.visual.highlightStep(line3);
+        
         if(createNewNode){
+            this.visual.highlightStep(line3);
             let P = new Node();
             P.length = Q.length + 2; 
             // this is because Q is a palindrome and the suffix and prefix == c so cQc = P
@@ -101,25 +110,22 @@ class Eertree {
                 this.visual.unhighlightStep(line5);
             }
             P.id = this.nodeID++;
-            this.nodes.push(P);
             P.parent = Q;
             Q.edges.set(c, P);
             
             // Draw the node edge and suffix link
-            await this.visual.addNode(P);
+            this.visual.addNode(P);
             this.visual.addEdge(Q, P, c);
             P.edgeID = this.visual.addLink(P, P.link);
+            await sleep(intervalSpeed);
+            this.visual.unhighlightStep(line3);
         }
-        else{
-            // This is for when the node is already made, we want to put in a null node
-            // so that when we delete we can just delete the top node every time
-            this.nodes.push(null);
-        }
-        this.visual.unhighlightStep(line3);
 
         this.maxSuffixOfT = Q.edges.get(c);
+        this.nodes.push(this.maxSuffixOfT);
         this.s += c;
-        
+        //console.log(this.maxSuffixOfT.toString());
+        this.visual.highlightNode(this.maxSuffixOfT);
         return createNewNode === true ? 1 : 0;
     }
 
@@ -132,25 +138,19 @@ class Eertree {
      * if the node was null we the last node that is not null
      */
     delete(){
-        let delNode = this.nodes.pop();
-        if(delNode === this.empty){
-            this.nodes.push(delNode);
+        let n = this.nodes.length;
+        if(n === 1){
             return;
         }
-        if(delNode !== null){
-            this.s = this.s.substring(0, this.s.length - 1);
-            let c = delNode.palindrome[0];
-            if(delNode.parent !== null){
-                delNode.parent.edges.delete(c);
-            }
-            this.visual.delNode(delNode);
+        let delNode = this.nodes.pop();
+        this.s = this.s.substring(0, this.s.length - 1);
+        let c = delNode.palindrome[0];
+        if(delNode.parent !== null){
+            delNode.parent.edges.delete(c);
         }
-        for(let i = this.nodes.length - 1; i >= 0; i--){
-            if(this.nodes[i] !== null){
-                this.maxSuffixOfT = this.nodes[i];
-                return;
-            }
-        }
+        this.visual.delNode(delNode);
+        this.maxSuffixOfT = this.nodes[n - 1];
+        this.visual.highlightNode(this.maxSuffixOfT);
     }
 }
 
@@ -162,7 +162,7 @@ const insertToy = async (c) =>{
     //console.log(eertree.nodes);
 };
 
-const deleteToy = async (c) =>{
+const deleteToy = (c) =>{
     eertree.delete();
     //console.log("Deleted " + c);
     //console.log(eertree.nodes);

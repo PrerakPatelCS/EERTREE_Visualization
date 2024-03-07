@@ -59,7 +59,7 @@ function createDataStream(array, insertChar, deleteChar, interval){
             deleteChar(prev.pop());
             currentIndex--;
         }
-        console.log(currentIndex, prev);
+        //console.log(currentIndex, prev);
     }
 
 

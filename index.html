@@ -18,7 +18,7 @@
     </div>
 
     <div class="container">
-        <input type="range" min="1000" max="5000" value="3000" class="slider" id="speedSlider" step="500">
+        <input type="range" min="500" max="3500" value="2000" class="slider" id="speedSlider" step="500">
     </div>
 
     <div class="flex-container">
@@ -121,13 +121,35 @@
                     takes O(1) time however because this is a data structure we can have 
                     our own object and create our own alphabet of any size.
                 </p>
+
+                <p>
+                    This is an offline data structure so it originally does not have a delete function.
+                    However, you can implement it as long as you keep a stack of the 
+                    max suffix of T at each point, this way we can just continue at that node. 
+                    We need the max suffix of T because that is where we start for the add function.
+                    The node that is highlighted at the end is the max suffix of T.
+                </p>
             </p>
             <p>
                 Here are some test cases you can try:
-                <ul>WASITACARORACATISAW</ul> <!-- <button class="copyButton">Copy Text</button> -->
-                <ul>eertree</ul>
-                <ul>racecar</ul>
-                <ul>rats live on no evil star</ul>
+                <table>
+                    <tr>
+                        <th>WASITACARORACATISAW</th>
+                        <th><button onclick="copyToClipboard('WASITACARORACATISAW')">Copy to Clippboard</button></th>
+                    </tr>
+                    <tr>
+                        <th>eertree</th>
+                        <th><button onclick="copyToClipboard('eertree')">Copy to Clippboard</button></th>
+                    </tr>
+                    <tr>
+                        <th>racecar</th>
+                        <th><button onclick="copyToClipboard('racecar')">Copy to Clippboard</button></th>
+                    </tr>
+                    <tr>
+                        <th>rats live on no evil star</th>
+                        <th><button onclick="copyToClipboard('rats live on no evil star')">Copy to Clippboard</button></th>
+                    </tr>
+                </table>
             </p>
             <p>
                 Here are some links about the EERTREE, I did the Javascript version for the 
