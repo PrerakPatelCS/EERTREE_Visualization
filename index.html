@@ -18,7 +18,7 @@
     </div>
 
     <div class="container">
-        <input type="range" min="500" max="3500" value="2000" class="slider" id="speedSlider" step="500">
+        <input type="range" min="100" max="2100" value="1100" class="slider" id="speedSlider" step="500">
     </div>
 
     <div class="flex-container">
@@ -128,6 +128,15 @@
                     max suffix of T at each point, this way we can just continue at that node. 
                     We need the max suffix of T because that is where we start for the add function.
                     The node that is highlighted at the end is the max suffix of T.
+                </p>
+
+                <p>
+                    Please be <strong>patient</strong> with the textarea, I wanted to take a fun approach where 
+                    the input is really free, instead of having the user have to use a submit button. 
+                    If you do things like cntrl+z or deleting a character that is inside of the add function, 
+                    there will be buggy behavior. We can just refresh. The physics for the tree is needed
+                    otherwise there will be really weird looking graphs. It will look weird when a node 
+                    is being placed but once it is stabilized that is the best tree.
                 </p>
             </p>
             <p>
