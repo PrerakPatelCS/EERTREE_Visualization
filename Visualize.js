@@ -46,6 +46,16 @@ class Visualize {
             layout:{
                 hierarchical: true
             },
+            physics: {
+                enabled: true, // cannot make it false otherwise we get a worse graph
+                hierarchicalRepulsion: {
+                    centralGravity: 0.0,
+                    springLength: 100,
+                    springConstant: 0.01,
+                    nodeDistance: 120,
+                    damping: 0.09,
+                  },
+            }
         };
 
         this.network = new vis.Network(container, this.data, this.options);
@@ -90,15 +100,12 @@ class Visualize {
     }
 
 
-    async addNode(node){
-        this.data.nodes.add(this.createNode(node))
-        await sleep(intervalSpeed);
-        
+    addNode(node){
+        this.data.nodes.add(this.createNode(node))        
     }
 
 
-    async delNode(node){
-        await sleep(intervalSpeed);
+    delNode(node){
         this.data.nodes.remove(node.id);
     }
 
@@ -113,17 +120,12 @@ class Visualize {
         return this.edgeID++;
     }
 
-    async highlight(node){
-        //console.log("begin" + new Date().toLocaleTimeString());
-
-        await sleep(intervalSpeed);
+    highlightNode(node){
         this.network.selectNodes([node.id], [true]);
-        await sleep(intervalSpeed);
+    }
+
+    highlightEdge(node) {
         this.network.selectEdges([node.edgeID]);
-        this.network.unselectAll();
-
-        //console.log("end" + new Date().toLocaleTimeString());
-
     }
 
     highlightStep(step){

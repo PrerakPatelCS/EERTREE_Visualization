@@ -59,6 +59,12 @@ function disable(event) {
     event.preventDefault();
 }
 
+
+async function copyToClipboard(str){
+    await navigator.clipboard.writeText(str);
+}
+
+
 // gets the caret position and also keeping the previos selection invariant condition
 function caretPos(event){
     caretIndex = textInput.selectionStart
