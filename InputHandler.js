@@ -8,9 +8,9 @@
  */
 
 
-let deque = [];
 let caretIndex = 0;
-let previousSelection = [];
+let endIndex = 0;
+let previousSelection = [0, 0];
 const textInput = document.getElementById('textInput');
 const speedSlider = document.getElementById('speedSlider');
 // These are the lines of code in the pseudocode that we highlight
@@ -21,8 +21,6 @@ const line4 = document.getElementById('ifBlock2');
 const line5 = document.getElementById('elseBlock');
 const line6 = document.getElementById('getLink');
 
-
-
 let intervalSpeed = parseInt(speedSlider.value);
 
 speedSlider.addEventListener('input', () => {
@@ -31,7 +29,7 @@ speedSlider.addEventListener('input', () => {
 });
 
 // the datastream we use to feed the EERTREE characters at the interval speed
-const dataStream = createDataStream(deque, insertToy, deleteToy, intervalSpeed);
+const dataStream = createDataStream(insertToy, deleteToy, intervalSpeed);
 
 
 keepTextAreaFocused();
@@ -67,8 +65,9 @@ async function copyToClipboard(str){
 
 // gets the caret position and also keeping the previos selection invariant condition
 function caretPos(event){
-    caretIndex = textInput.selectionStart
-    setSelect(event)
+    prevIndex = caretIndex;
+    caretIndex = textInput.selectionStart;
+    setSelect(event);
 }
 
 // Helps with the caret index invariant condition
@@ -78,59 +77,96 @@ function keepTextAreaFocused() {
 
 // Processes the character inputs, If something is selected previously we delete it 
 function characterInput(event) {
-    dataStream.pause();
     const inputType = event.inputType;
     const selectionStart = previousSelection[0];
     const selectionEnd = previousSelection[1];
-    const streamIndex = dataStream.getIndex();
-    
+
+    // Only want the paste event to be called
+    if(inputType === 'insertFromPaste'){
+        return;
+    }
+
+    //console.log(caretIndex, endIndex, selectionStart);
+    // carretIndex is where the character is being added 
+    // endIndex is at the end
+    // they should be equal, selectionStart is also equal
+    /**
+     * CaretIndex and SelectionStart are the same, we can just delete every
+     * thing from selectionStart to the end and then re-add the characters
+     * that are not part of the event
+     */
+    let charsToReAdd = '';
+    if(selectionStart < endIndex){
+        dataStream.deleteCharacters(endIndex - selectionStart);
+        endIndex -= (endIndex - selectionStart);
+    }
+
+
     if (inputType === 'insertText') {
         // Character input - insert into the deque at the caret index
-        const insertedChar = event.data;
-        deleteSelect();
-        if(streamIndex > caretIndex){
-            dataStream.setIndex(caretIndex);
-        }
-        deque.splice(caretIndex, 0, insertedChar);
+        charsToReAdd = textInput.value.substring(selectionStart + 1);
+        dataStream.addCharacters(event.data);
+        endIndex += event.data.length;
     }
     else if (inputType === 'deleteContentBackward') {
-        deleteSelect();
         if(selectionStart === selectionEnd){
             // Deletion (Backspace) - remove character at the caret index
-            if (caretIndex > 0) {
-                deque.splice(caretIndex - 1, 1);
-            }
+            charsToReAdd = textInput.value.substring(selectionStart - 1);
+            dataStream.deleteCharacters(1);
+            endIndex--;
         }
     }
     else if (inputType === 'deleteContentForward') {
-        deleteSelect();
         if (selectionStart === selectionEnd){
-            // Deletion (Backspace) - remove character at the caret index
-            if (caretIndex < deque.length) {
-                deque.splice(caretIndex, 1);
-            }
+            // Deletion (delete) - remove character at the caret index
+            charsToReAdd = textInput.value.substring(selectionStart);
+            dataStream.deleteCharacters(1);
+            endIndex--;
         }
     }
+    else{
+        // this is cntrl V
+        console.log(event)
+    }
+
     // update the caretPos after the event
     caretPos(event);
-    if(streamIndex > caretIndex){
-        dataStream.setIndex(caretIndex);
+    if(charsToReAdd.length > 0){
+        dataStream.addCharacters(charsToReAdd);
+        endIndex += charsToReAdd.length;
     }
-    dataStream.resume();
+    //console.log(caretIndex, endIndex);
+
 }
 
-// This is Cntrl V
-function multipleInput(event) {
-    dataStream.pause();
-    deleteSelect();
-    // Access the pasted text from the event
-    const pastedText = (event.clipboardData || window.clipboardData).getData('text');
-    for(let i = 0; i < pastedText.length; i++){
-        deque.splice(caretIndex + i, 0, pastedText[i]);
+function multipleInput(event){
+    
+    const selectionStart = previousSelection[0];
+    const selectionEnd = previousSelection[1];
+    let charsToReAdd = '';
+    if(selectionStart < endIndex){
+        dataStream.deleteCharacters(endIndex - selectionStart);
+        endIndex -= (endIndex - selectionStart);
     }
+
+
+    //console.log(event);
+    const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+
+    dataStream.addCharacters(pastedText);
+    charsToReAdd = textInput.value.substring(selectionEnd);
+    endIndex += pastedText.length;
+
+    if(charsToReAdd.length > 0){
+        dataStream.addCharacters(charsToReAdd);
+        endIndex += charsToReAdd.length;
+    }
+    //console.log(endIndex, selectionStart, selectionEnd, charsToReAdd, pastedText, textInput.value);
     caretPos(event);
-    dataStream.resume();
+
+
 }
+
 
 // for the previous selection invariant
 function setSelect(event){
@@ -144,24 +180,5 @@ function handleArrows(event) {
     
     if (arrowKeys.includes(event.key)) {
       caretPos(event);
-    }
-}
-
-/**
- * Assumed that the datastream is paused currently!
- * There is not event for if something is selected and then deleted
- * so we keep track of the previous selection and call this function
- */
-function deleteSelect(){
-    const streamIndex = dataStream.getIndex();
-    const selectionStart = previousSelection[0];
-    const selectionEnd = previousSelection[1];
-    if (selectionStart !== selectionEnd){
-        for(let i = selectionStart; i < selectionEnd; i++){
-            deque.splice(selectionStart, 1);
-        }
-        if(streamIndex > selectionStart){
-            dataStream.setIndex(selectionStart)
-        }
     }
 }

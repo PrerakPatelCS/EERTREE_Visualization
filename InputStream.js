@@ -15,23 +15,50 @@ function sleep(time) {
  * @param {int} interval 
  * @returns 
  */
-function createDataStream(array, insertChar, deleteChar, interval){
+function createDataStream(insertChar, deleteChar, interval){
     let currentIndex = 0;
     let paused = false;
-    let prev = [];
     let speedInterval = interval;
     let inIterateArray = false;
+    let actionsQueue = new Queue();
 
     const iterateArray = async () => {
-        while(!paused && currentIndex < array.length){
-            inIterateArray = true;
+        inIterateArray = true;
+        while(!paused && !actionsQueue.isEmpty()){
             await sleep(speedInterval);
-            const c = array[currentIndex++];
-            prev.push(c);
-            await insertChar(c);
+            // console.log(actionsQueue.printQueue());
+            request = actionsQueue.peek();
+            if(request == undefined){
+                continue;
+            }
+            else{
+                request = actionsQueue.poll();
+            }
+            if(request[0] == 'a'){
+                await insertChar(request[1]);
+            }
+            else{
+                while(request[1]--){
+                    deleteChar();
+                }
+            }
         }
         inIterateArray = false;
         pause();
+    }
+
+    function addCharacters(str){
+        pause();
+        for(const c of str){
+            actionsQueue.offer(['a', c]);
+        }
+        resume();
+    }
+
+    function deleteCharacters(n){
+        pause();
+        actionsQueue.offer(['d', n]);
+        resume();
     }
 
 
@@ -49,31 +76,18 @@ function createDataStream(array, insertChar, deleteChar, interval){
     }
 
 
-    const getIndex = () => {
-        return currentIndex;
-    }
-
-
-    const setIndex = (index) => {
-        while(currentIndex > index){
-            deleteChar(prev.pop());
-            currentIndex--;
-        }
-        //console.log(currentIndex, prev);
-    }
-
-
     const setSpeedInterval = (num) => {
         speedInterval = num;
     }
+
 
 
     // The functions we can use in input handling
     return {
         pause,
         resume,
-        getIndex,
-        setIndex,
+        addCharacters,
+        deleteCharacters,
         setSpeedInterval
     };
 }
