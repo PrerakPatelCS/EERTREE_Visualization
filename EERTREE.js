@@ -149,7 +149,7 @@ class Eertree {
             delNode.parent.edges.delete(c);
         }
         this.visual.delNode(delNode);
-        this.maxSuffixOfT = this.nodes[n - 1];
+        this.maxSuffixOfT = this.nodes[n - 2];
         this.visual.highlightNode(this.maxSuffixOfT);
     }
 }

@@ -131,12 +131,42 @@
                 </p>
 
                 <p>
-                    Please be <strong>patient</strong> with the textarea, I wanted to take a fun approach where 
-                    the input is really free, instead of having the user have to use a submit button. 
-                    If you do things like cntrl+z or deleting a character that is inside of the add function, 
-                    there will be buggy behavior. We can just refresh. The physics for the tree is needed
-                    otherwise there will be really weird looking graphs. It will look weird when a node 
-                    is being placed but once it is stabilized that is the best tree.
+                    I wanted to take a fun approach with the input where each action you take in the 
+                    text area is submitted into a queue of actions and that is how the tree gets built.
+                    There are some bugs like when you use cntrl+z that are hard to handle so please be
+                    patient with it. If you notice, that if you paste 10 characters and then delete them all
+                    the queue will not build everything and then delete them all, this is because I have a 
+                    simplify function. There are only 2 actions and one adds and one deletes so it makes sense
+                    to simplify them.
+                </p>
+                <p>
+                    When there is a long palindrome the tree will build in a weird way but the physics
+                    will bring the tree back to normal. Without the physics the tree will build really 
+                    weirdly. I would appreciate it if you would wait for the tree to build for long palindromes.
+                </p>
+                <p>
+                    Thank you for checking out this website. I wanted to build this because there where
+                    no resources about the EERTREE visualization so I decided to build it myself!
+                </p>
+                <p>
+                    Here are some problems you can try to solve with the EERTREE 
+                    <table>
+                        <tr>
+                            <th>
+                                <a href="https://leetcode.com/problems/longest-palindromic-substring/description/" target="_blank">Longest Palindromic Substring</a>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <a href="https://leetcode.com/problems/palindromic-substrings/description/" target="_blank">Number of Palindromic Substrings</a>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <a href="https://adventofcode.com/2023/day/13" target="_blank">Valley of Mirrors</a>
+                            </th>
+                        </tr>
+                    </table>
                 </p>
             </p>
             <p>
@@ -171,6 +201,7 @@
 
     <script type="text/javascript" src="Visualize.js"></script>
     <script type="text/javascript" src="EERTREE.js"></script>
+    <script type="text/javascript" src="Queue.js"></script>
     <script type="text/javascript" src="InputStream.js"></script>
     <script type="text/javascript" src="InputHandler.js"></script>
 </body>
