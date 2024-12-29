@@ -44,7 +44,19 @@ class Visualize {
                 }
             },
             layout:{
-                hierarchical: true
+                    randomSeed: undefined,
+                    improvedLayout:true,
+                    hierarchical: {
+                        enabled:true,
+                        levelSeparation: 150,
+                        nodeSpacing: 100,
+                        treeSpacing: 0,
+                        blockShifting: false,
+                        edgeMinimization: false, // Biggest Issue
+                        parentCentralization: true,
+                        direction: 'UD',        // UD, DU, LR, RL
+                        sortMethod: 'directed',  // hubsize, directed
+                    }
             },
             physics: {
                 enabled: true, // cannot make it false otherwise we get a worse graph
@@ -52,9 +64,11 @@ class Visualize {
                     centralGravity: 0.0,
                     springLength: 100,
                     springConstant: 0.01,
-                    nodeDistance: 120,
+                    nodeDistance: 100,
                     damping: 0.09,
-                  },
+                },
+                maxVelocity: 35,
+
             }
         };
 
@@ -66,7 +80,7 @@ class Visualize {
         return {
             id: node.id,
             label: node.length < 1 ? node.length.toString() : node.palindrome,
-            level: node.level
+            level: node.level,
         };
     }
 
@@ -89,6 +103,7 @@ class Visualize {
         return {
             from: fromNode.id,
             to: toNode.id,
+            physics: false,
             dashes: true,
             arrows:'to',
             id: id,

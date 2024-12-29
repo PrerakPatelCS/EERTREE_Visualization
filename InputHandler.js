@@ -161,9 +161,11 @@ function multipleInput(event){
         dataStream.addCharacters(charsToReAdd);
         endIndex += charsToReAdd.length;
     }
-    //console.log(endIndex, selectionStart, selectionEnd, charsToReAdd, pastedText, textInput.value);
+    // console.log(endIndex, selectionStart, selectionEnd, charsToReAdd, pastedText, textInput.value);
     caretPos(event);
-
+    // fixes the issue of pasting and then adding a letter
+    previousSelection[0] = endIndex;
+    previousSelection[1] = endIndex;
 
 }
 
