@@ -27,6 +27,7 @@ class Eertree {
         this.nodes.push(this.empty);
         this.visual = new Visualize(this.imaginary, this.empty); // Instance to the Visual class that has all the visualization functions
         this.visual.highlightNode(this.empty);
+        this.freq = new Map(); // <int, int>
     }
 
 
@@ -57,7 +58,7 @@ class Eertree {
                 }
                 this.visual.highlightNode(u);
                 await sleep(intervalSpeed);
-                this.visual.highlightEdge(u);
+                // this.visual.highlightEdge(u);
                 await sleep(intervalSpeed);
                 u = u.link;
                 k = u.length;
@@ -123,6 +124,13 @@ class Eertree {
 
         this.maxSuffixOfT = Q.edges.get(c);
         this.nodes.push(this.maxSuffixOfT);
+        let suffixId = this.maxSuffixOfT.id
+        if(this.freq.has(suffixId)){
+            this.freq.set(suffixId, this.freq.get(suffixId) + 1);
+        }
+        else{
+            this.freq.set(suffixId, 1);
+        }
         this.s += c;
         //console.log(this.maxSuffixOfT.toString());
         this.visual.highlightNode(this.maxSuffixOfT);
@@ -136,6 +144,7 @@ class Eertree {
      * Update s
      * update the parent 
      * if the node was null we the last node that is not null
+     * Use a freq and only delete if it is 0 now
      */
     delete(){
         let n = this.nodes.length;
@@ -143,14 +152,16 @@ class Eertree {
             return;
         }
         let delNode = this.nodes.pop();
+        this.freq.set(delNode.id, this.freq.get(delNode.id) - 1);
         this.s = this.s.substring(0, this.s.length - 1);
         let c = delNode.palindrome[0];
-        if(delNode.parent !== null){
+        if(delNode.parent !== null && this.freq.get(delNode.id) == 0){
             delNode.parent.edges.delete(c);
+
+            this.visual.delNode(delNode);
+            this.maxSuffixOfT = this.nodes[n - 2];
+            this.visual.highlightNode(this.maxSuffixOfT);
         }
-        this.visual.delNode(delNode);
-        this.maxSuffixOfT = this.nodes[n - 2];
-        this.visual.highlightNode(this.maxSuffixOfT);
     }
 }
 
