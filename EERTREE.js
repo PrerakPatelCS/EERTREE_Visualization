@@ -120,6 +120,7 @@ class Eertree {
             P.edgeID = this.visual.addLink(P, P.link);
             await sleep(intervalSpeed);
             this.visual.unhighlightStep(line3);
+            this.visual.fit();
         }
 
         this.maxSuffixOfT = Q.edges.get(c);
@@ -161,6 +162,7 @@ class Eertree {
             this.visual.delNode(delNode);
             this.maxSuffixOfT = this.nodes[n - 2];
             this.visual.highlightNode(this.maxSuffixOfT);
+            this.visual.fit();
         }
     }
 }

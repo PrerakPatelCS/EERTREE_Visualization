@@ -116,7 +116,7 @@ class Visualize {
 
 
     addNode(node){
-        this.data.nodes.add(this.createNode(node))        
+        this.data.nodes.add(this.createNode(node));
     }
 
 
@@ -149,5 +149,12 @@ class Visualize {
 
     unhighlightStep(step){
         step.classList.remove('glow');
+    }
+
+    fit(){
+        this.network.fit({
+            minZoomLevel: 50,
+            maxZoomLevel: 1000,
+        })
     }
 }
